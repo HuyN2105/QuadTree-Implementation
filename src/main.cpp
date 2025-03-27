@@ -82,13 +82,13 @@ public:
             return Rectangle{x - halfW / 2, y - halfH / 2, halfW + extraW, halfH + extraH};
         }
         if (quadrant == "ne") {
-            return Rectangle{x + halfW / 2, y - halfH / 2, halfW, halfH + extraH};
+            return Rectangle{x + halfW / 2, y - halfH / 2, halfW + extraW, halfH + extraH};
         }
         if (quadrant == "sw") {
-            return Rectangle{x - halfW / 2, y + halfH / 2, halfW + extraW, halfH};
+            return Rectangle{x - halfW / 2, y + halfH / 2, halfW + extraW, halfH + extraH};
         }
         if (quadrant == "se") {
-            return Rectangle{x + halfW / 2, y + halfH / 2, halfW, halfH};
+            return Rectangle{x + halfW / 2, y + halfH / 2, halfW + extraW, halfH + extraH};
         }
 
         return Rectangle{0, 0, 0, 0}; // Fallback case
