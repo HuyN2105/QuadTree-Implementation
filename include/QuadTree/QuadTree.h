@@ -24,7 +24,7 @@ namespace QuadTree {
 
         QuadTree *child[4]{};
 
-        constexpr explicit QuadTree(const int _capacity = 4, Box<T> _boundary) : capacity(_capacity), boundary(_boundary), divided(false) {}
+        constexpr explicit QuadTree(Box<T> _boundary, const int _capacity = 4) : capacity(_capacity), boundary(_boundary), divided(false) {}
 
         [[nodiscard]] constexpr QuadTree** getChild() {
             if (divided) return child;
@@ -42,10 +42,10 @@ namespace QuadTree {
             if (divided) {
                 for (auto& c : child) if (c->boundary.contains(_pos)) return c->getBoundary(_pos);
             }
-            return boundary;
+            return &boundary;
         }
 
-        [[nodiscard]] constexpr bool insert(const Vector2<T> &_p) {
+        [[nodiscard]] constexpr bool insert(const Vector2<T> _p) {
             if (!boundary.contains(_p)) return false;
             if (!divided) {
                 if (points.size() < capacity) {
@@ -54,18 +54,18 @@ namespace QuadTree {
                 }
                 this->subdivide();
             }
-            return (child[0].insert(_p) ||
-                    child[1].insert(_p) ||
-                    child[2].insert(_p) ||
-                    child[3].insert(_p)
+            return (child[0]->insert(_p) ||
+                    child[1]->insert(_p) ||
+                    child[2]->insert(_p) ||
+                    child[3]->insert(_p)
                     );
         }
 
         constexpr bool subdivide() {
-            child[0] = QuadTree(capacity, boundary.subdivide("ne"));
-            child[1] = QuadTree(capacity, boundary.subdivide("nw"));
-            child[2] = QuadTree(capacity, boundary.subdivide("se"));
-            child[3] = QuadTree(capacity, boundary.subdivide("sw"));
+            child[0] = new QuadTree(boundary.subdivide("ne"), capacity);
+            child[1] = new QuadTree(boundary.subdivide("nw"), capacity);
+            child[2] = new QuadTree(boundary.subdivide("se"), capacity);
+            child[3] = new QuadTree(boundary.subdivide("sw"), capacity);
 
             divided = true;
 

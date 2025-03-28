@@ -33,7 +33,7 @@ namespace QuadTree {
 
         [[nodiscard]] constexpr Vector2<T>& getCenter() const noexcept { return Vector2<T>(left + width / 2, top + height / 2); }
 
-        [[nodiscard]] constexpr bool contains(Vector2<T>& position) const noexcept {
+        [[nodiscard]] constexpr bool contains(Vector2<T> position) const noexcept {
             return (left <= position.x &&
                     this->getRight() >= position.x &&
                     top <= position.y &&
@@ -47,30 +47,19 @@ namespace QuadTree {
                      this->getBottom() <= top);
         }
 
-        [[nodiscard]] constexpr Box<T> subdivide(const std::string &quadrant) const noexcept {
+        [[nodiscard]] constexpr Box subdivide(const std::string &quadrant) const noexcept {
             T halfWidth = this->width / 2;
             T halfHeight = this->height / 2;
 
-            T extraWidth = this->width%2;
-            T extraHeight = this->height%2;
+            T extraWidth = static_cast<int>(this->width)%2;
+            T extraHeight = static_cast<int>(this->height)%2;
 
-            switch (quadrant) {
-                case "nw":
-                    return Box<T>(left, top, halfWidth + extraWidth, halfHeight + extraHeight);
-                    break;
-                case "ne":
-                    return Box<T>(left + halfWidth, top, halfWidth + extraWidth, halfHeight + extraHeight);
-                    break;
-                case "sw":
-                    return Box<T>(left, top + halfHeight, halfWidth + extraWidth, halfHeight + extraHeight);
-                    break;
-                case "se":
-                    return Box<T>(left + halfWidth, top, halfWidth + extraWidth, halfHeight + extraHeight);
-                    break;
-                default:
-                    return Box<T>(0, 0, 0, 0);
-                    break;
-            }
+            if (quadrant == "nw") return Box(left, top, halfWidth + extraWidth, halfHeight + extraHeight);
+            if (quadrant == "ne") return Box(left + halfWidth, top, halfWidth + extraWidth, halfHeight + extraHeight);
+            if (quadrant == "sw") return Box(left, top + halfHeight, halfWidth + extraWidth, halfHeight + extraHeight);
+            if (quadrant == "se") return Box(left + halfWidth, top + halfHeight, halfWidth + extraWidth, halfHeight + extraHeight);
+
+            return Box(0, 0, 0, 0);
         }
 
     };
