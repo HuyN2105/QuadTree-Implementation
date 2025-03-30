@@ -17,6 +17,9 @@ public:
 };
 
 
+                // **************************************** VARIABLES **************************************** //
+
+
 constexpr uint64_t UpdateInterval = 10, mouseActionInterval = 50;
 uint64_t LatestUpdatedTick = 0, currentTick = 0, LatestMouseActionUpdatedTick = 0;
 
@@ -29,6 +32,20 @@ vector<Vector2<double>> onScreenPoints{};
 
 Vector2<double> WindowSize{1280, 720};
 
+
+                // **************************************** FUNCTIONS **************************************** //
+
+
+static int resizingEventWatcher(void* data, const SDL_Event* event) {
+    if (event->type == SDL_WINDOWEVENT &&
+        event->window.event == SDL_WINDOWEVENT_RESIZED) {
+        if (const SDL_Window* win = SDL_GetWindowFromID(event->window.windowID); win == static_cast<SDL_Window *>(data)) {
+            WindowSize.x = event->window.data1;
+            WindowSize.y = event->window.data2;
+        }
+        }
+    return 0;
+}
 
 void drawTree(SDL_Renderer *renderer, const QuadTree::QuadTree<double>& T) {
     if (T.divided) {
@@ -82,7 +99,7 @@ void MouseActionProcess(QuadTree::QuadTree<double>& root) {
 }
 
 void loop(SDL_Renderer *renderer) {
-    const QuadTree::Box<double> rootBoundary{10, 10, WindowSize.y - 20, WindowSize.y - 20};
+    const QuadTree::Box<double> rootBoundary{WindowSize.x / 2 - WindowSize.y / 2, 10, WindowSize.y - 20, WindowSize.y - 20};
     QuadTree::QuadTree<double> root{rootBoundary, 4};
 
     for (int i = 0; i < onScreenPoints.size(); i++) if (!root.insert(onScreenPoints[i])) {
@@ -110,6 +127,10 @@ HuyN_ {
 
     SDL_Event event;
     bool isRunning = true;
+
+
+    SDL_AddEventWatch(reinterpret_cast<SDL_EventFilter>(resizingEventWatcher), window);
+
 
     SDL_ShowWindow(window);
 
