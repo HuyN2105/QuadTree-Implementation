@@ -26,21 +26,35 @@ namespace QuadTree {
 
         constexpr explicit QuadTree(Box<T> _boundary, const int _capacity = 4) : capacity(_capacity), boundary(_boundary), divided(false) {}
 
-        [[nodiscard]] constexpr QuadTree** getChild() {
-            if (divided) return child;
-            return nullptr;
+        [[nodiscard]] constexpr QuadTree *getChild(Vector2<T> _pos) {
+            if (divided) {
+                for (auto &c : child) {
+                    if (c->boundary.contains(_pos)) {
+                        return c->getChild(_pos);
+                    }
+                }
+            }
+            return this;
         }
 
         [[nodiscard]] constexpr Vector2<T> *getPoints(Vector2<T> _pos) {
             if (divided) {
-                for (auto& c : child) if (c->boundary.contains(_pos)) return c->getPoints(_pos);
+                for (auto& c : child) {
+                    if (c->boundary.contains(_pos)) {
+                        return c->getPoints(_pos);
+                    }
+                }
             }
             return points;
         }
 
         [[nodiscard]] constexpr Box<T> *getBoundary(Vector2<T> _pos) {
             if (divided) {
-                for (auto& c : child) if (c->boundary.contains(_pos)) return c->getBoundary(_pos);
+                for (auto& c : child) {
+                    if (c->boundary.contains(_pos)) {
+                        return c->getBoundary(_pos);
+                    }
+                }
             }
             return &boundary;
         }

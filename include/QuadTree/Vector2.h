@@ -49,6 +49,13 @@ namespace HuyNVector {
             return *this;
         }
 
+        constexpr bool operator==(Vector2<T>* _v) noexcept {
+            return (_v->x == this->x && _v->y == this->y);
+        }
+
+        constexpr bool operator!=(Vector2<T> _v) noexcept {
+            return !(_v == this);
+        }
 
         // ********************************* VECTOR FUNCTION ********************************* //
 
@@ -70,7 +77,7 @@ namespace HuyNVector {
 
         [[nodiscard]] double angleBetween(const Vector2<T>& _v) const noexcept {
             return std::acos(this->dot(_v) / (this->magnitude() * _v.magnitude()));
-        };
+        }
 
     };
 
@@ -99,7 +106,6 @@ namespace HuyNVector {
         _v /= lhs;
         return _v;
     }
-
 }
 
 #endif //VECTOR2_H

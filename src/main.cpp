@@ -17,8 +17,8 @@ public:
 };
 
 
-constexpr uint64_t UpdateInterval = 10;
-uint64_t LatestUpdatedTick = 0;
+constexpr uint64_t UpdateInterval = 10, mouseActionInterval = 50;
+uint64_t LatestUpdatedTick = 0, currentTick = 0, LatestMouseActionUpdatedTick = 0;
 
 bool is_holding_left_click = false;
 bool is_holding_right_click = false;
@@ -53,31 +53,45 @@ void HoldingLeftClick(QuadTree::QuadTree<double>& root){
     MousePos = Vector2<double>(tempPos.x, tempPos.y);
     onScreenPoints.push_back(MousePos);
     if (!root.insert(MousePos)) {
-        // throw SDLException("Failed to insert point");
-        cerr << "Failed to insert point\n";
+        cerr << "Failed to insert point " << MousePos.x << ' ' << MousePos.y << endl;
+        onScreenPoints.erase(onScreenPoints.begin() + onScreenPoints.size() - 1);
     }
+    LatestMouseActionUpdatedTick = SDL_GetTicks();
 }
 
 void GetBoundary(QuadTree::QuadTree<double> &root){
     Vector2<int> tempPos;
     SDL_GetMouseState(&tempPos.x, &tempPos.y);
     MousePos = Vector2<double>(tempPos.x, tempPos.y);
-    cout << "RESULT:\n";
-    const QuadTree::Box<double> *bound = root.getBoundary(MousePos);
-    cout << bound->top << ", " << bound->left << ", " << bound->width << ", " << bound->height << ", " << endl;
+    const QuadTree::QuadTree<double> *c = root.getChild(MousePos);
+    const QuadTree::Box<double> bound = c->boundary;
+    cout << bound.top << ", " << bound.left << ", " << bound.width << ", " << bound.height << ", " << endl;
+    cout << c->points.size() << endl;
+    LatestMouseActionUpdatedTick = SDL_GetTicks();
+}
+
+void MouseActionProcess(QuadTree::QuadTree<double>& root) {
+    currentTick = SDL_GetTicks();
+
+    Vector2<int> tempPos;
+    SDL_GetMouseState(&tempPos.x, &tempPos.y);
+    auto mousePos = Vector2<double>(tempPos.x, tempPos.y);
+
+    if (is_holding_left_click && currentTick - LatestMouseActionUpdatedTick >= mouseActionInterval && mousePos != MousePos) HoldingLeftClick(root);
+    if (is_holding_right_click && currentTick - LatestMouseActionUpdatedTick >= mouseActionInterval && mousePos != MousePos) GetBoundary(root);
 }
 
 void loop(SDL_Renderer *renderer) {
     const QuadTree::Box<double> rootBoundary{10, 10, WindowSize.y - 20, WindowSize.y - 20};
     QuadTree::QuadTree<double> root{rootBoundary, 4};
+
     for (int i = 0; i < onScreenPoints.size(); i++) if (!root.insert(onScreenPoints[i])) {
         // throw SDLException("Failed to insert point");
         cerr << "Failed to insert point " << onScreenPoints[i].x << ", " << onScreenPoints[i].y << endl;
         onScreenPoints.erase(onScreenPoints.begin() + i);
     }
-    const uint64_t currentTick = SDL_GetTicks();
-    if (is_holding_left_click && currentTick - LatestUpdatedTick >= UpdateInterval) HoldingLeftClick(root);
-    if (is_holding_right_click && currentTick - LatestUpdatedTick >= UpdateInterval) GetBoundary(root);
+
+    MouseActionProcess(root);
 
     drawer(renderer, root);
 
@@ -128,10 +142,10 @@ HuyN_ {
                     break;
             }
         }
-
-        if (const uint64_t CurrentTick = SDL_GetTicks(); CurrentTick - LatestUpdatedTick >= UpdateInterval) {
+        currentTick = SDL_GetTicks();
+        if (currentTick - LatestUpdatedTick >= UpdateInterval) {
             loop(renderer);
-            LatestUpdatedTick = CurrentTick;
+            LatestUpdatedTick = currentTick;
         }
 
         SDL_RenderPresent(renderer);
