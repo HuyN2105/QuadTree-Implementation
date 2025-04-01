@@ -16,6 +16,9 @@ namespace QuadTree {
     template<typename T>
     class Box {
     public:
+
+        // ****************************** BOX INITIALIZATION ****************************** //
+
         T top;
         T left;
         T width;    // must be positive
@@ -24,6 +27,8 @@ namespace QuadTree {
         constexpr Box(T left, T top, T width, T height) noexcept : top(top), left(left), width(width), height(height) {}
 
         explicit constexpr Box(Vector2<T>& position = {0, 0}, Vector2<T>& size = {0, 0}) noexcept : top(position.y), left(position.x), width(size.x), height(size.y) {}
+
+        // ******************************** BOX FUNCTIONS ******************************** //
 
         [[nodiscard]] constexpr T getRight() const noexcept { return left + width; }
 

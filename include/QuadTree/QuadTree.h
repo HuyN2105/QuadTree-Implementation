@@ -16,6 +16,9 @@ namespace QuadTree {
     template<typename T>
     class QuadTree {
         public:
+
+        // ****************************** QUADTREE INITIALIZATION ****************************** //
+
         int capacity;                   // default value: 4
         Box<T> boundary;
         bool divided;
@@ -25,6 +28,8 @@ namespace QuadTree {
         QuadTree *child[4]{};
 
         constexpr explicit QuadTree(Box<T> _boundary, const int _capacity = 4) : capacity(_capacity), boundary(_boundary), divided(false) {}
+
+        // ********************************* QUADTREE FUNCTIONS ******************************** //
 
         [[nodiscard]] constexpr QuadTree *getChild(Vector2<T> _pos) {
             if (divided) {
