@@ -47,22 +47,12 @@ static int resizingEventWatcher(void* data, const SDL_Event* event) {
     return 0;
 }
 
-void drawTree(SDL_Renderer *renderer, const QuadTree::QuadTree<double>& T) {
-    if (T.divided) {
-        for (auto & c : T.child) drawTree(renderer, *c);
-    }
-    const QuadTree::Box<double> bound = T.boundary;
-    const SDL_Rect rect{static_cast<int>(bound.left), static_cast<int>(bound.top), static_cast<int>(bound.width), static_cast<int>(bound.height)};
-    SDL_RenderDrawRect(renderer, &rect);
-}
-
-void drawer(SDL_Renderer *renderer, const QuadTree::QuadTree<double>& root) {
-    drawTree(renderer, root);
+void drawer(SDL_Renderer *renderer, QuadTree::QuadTree<double>& root) {
+    root.SDL_drawTree(renderer);
     for (const auto &p : onScreenPoints) {
         SDL_RenderDrawPoint(renderer, p.x, p.y);
     }
 }
-
 
 void HoldingLeftClick(QuadTree::QuadTree<double>& root){
     Vector2<int> tempPos;
