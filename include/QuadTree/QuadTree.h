@@ -106,9 +106,9 @@ namespace QuadTree {
 
         // ********************************* BUILT-IN QUADTREE DRAW FUNCTION ******************************** //
 
-        constexpr void SDL_drawTree(SDL_Renderer *renderer) {
+        constexpr void SDL_DrawTree(SDL_Renderer *renderer) {
             if (this->divided) {
-                for (auto & c : this->child) c->SDL_drawTree(renderer);
+                for (auto & c : this->child) c->SDL_DrawTree(renderer);
             }
             const Box<T> bound = this->boundary;
             const SDL_Rect rect{static_cast<int>(bound.left), static_cast<int>(bound.top), static_cast<int>(bound.width), static_cast<int>(bound.height)};

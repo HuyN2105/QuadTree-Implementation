@@ -48,7 +48,7 @@ static int resizingEventWatcher(void* data, const SDL_Event* event) {
 }
 
 void drawer(SDL_Renderer *renderer, QuadTree::QuadTree<double>& root) {
-    root.SDL_drawTree(renderer);
+    root.SDL_DrawTree(renderer);
     for (const auto &p : onScreenPoints) {
         SDL_RenderDrawPoint(renderer, p.x, p.y);
     }
